@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="50" fill="#813588" />
+  <text x="50" y="62" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="900" font-size="34" text-anchor="middle">B</text>
+  <circle cx="68" cy="38" r="4" fill="#FFC800"/>
+</svg>

@@ -1,0 +1,8 @@
+{
+  "name": "Ad Intel",
+  "description": "Competitive ad intelligence on Meta (Facebook/Instagram) with Ad Library scraping, heuristic spend estimation, and Gemini-powered strategic analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

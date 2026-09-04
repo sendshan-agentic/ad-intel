@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgOto" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#18202c"/>
+      <stop offset="100%" stop-color="#0e131a"/>
+    </linearGradient>
+    <linearGradient id="orangeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff7300"/>
+      <stop offset="100%" stop-color="#ff5400"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bgOto)"/>
+  
+  <!-- Poster Frame -->
+  <rect x="70" y="25" width="460" height="550" rx="14" fill="#202938" stroke="#334155" stroke-width="2"/>
+  
+  <!-- Vedantu Header -->
+  <g transform="translate(95, 45)">
+    <circle cx="16" cy="16" r="16" fill="#ff5400"/>
+    <path d="M10 13l6 8 8-11" stroke="#ffffff" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="40" y="22" fill="#ffffff" font-family="-apple-system, sans-serif" font-size="18" font-weight="800">Vedantu</text>
+    <text x="115" y="22" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="13">1:1 LIVE Tuition</text>
+  </g>
+
+  <!-- Main Poster Headline -->
+  <rect x="95" y="90" width="410" height="75" rx="8" fill="#0f172a" fill-opacity="0.6"/>
+  <text x="110" y="118" fill="#f8fafc" font-family="-apple-system, sans-serif" font-size="17" font-weight="800">Online Personal Tuition Right from Your</text>
+  <text x="110" y="145" fill="#fbbf24" font-family="-apple-system, sans-serif" font-size="20" font-weight="900">Home in Hyderabad / Across India</text>
+
+  <!-- Bullet Points -->
+  <g transform="translate(100, 185)">
+    <circle cx="8" cy="8" r="5" fill="#ff5400"/>
+    <text x="24" y="12" fill="#e2e8f0" font-family="-apple-system, sans-serif" font-size="14" font-weight="500">1-on-1 Personalized Attention (Classes 1-12)</text>
+    
+    <circle cx="8" cy="38" r="5" fill="#ff5400"/>
+    <text x="24" y="42" fill="#e2e8f0" font-family="-apple-system, sans-serif" font-size="14" font-weight="500">CBSE, ICSE, IGCSE, IB &amp; State Boards</text>
+
+    <circle cx="8" cy="68" r="5" fill="#ff5400"/>
+    <text x="24" y="72" fill="#e2e8f0" font-family="-apple-system, sans-serif" font-size="14" font-weight="500">Instant Doubt Solving &amp; Customized Pace</text>
+  </g>
+
+  <!-- Yellow CTA Ribbon inside Poster -->
+  <rect x="95" y="280" width="180" height="34" rx="6" fill="#fbbf24"/>
+  <text x="185" y="303" fill="#78350f" font-family="-apple-system, sans-serif" font-size="13" font-weight="800" text-anchor="middle">Book FREE Trial</text>
+
+  <!-- Child studying on laptop visual -->
+  <g transform="translate(180, 320)">
+    <!-- Desk surface -->
+    <rect x="-60" y="200" width="380" height="15" rx="4" fill="#334155"/>
+    
+    <!-- Child silhouette / figure with orange t-shirt -->
+    <circle cx="120" cy="55" r="35" fill="#fed7aa"/> <!-- Head -->
+    <path d="M95 50 Q120 20 145 50 Z" fill="#332211"/> <!-- Hair -->
+    <path d="M70 115 C70 90 90 90 120 90 C150 90 170 90 170 115 L180 200 L60 200 Z" fill="url(#orangeGrad)"/> <!-- Orange T-shirt -->
+
+    <!-- Laptop -->
+    <polygon points="65,160 175,160 160,110 80,110" fill="#94a3b8"/> <!-- Screen back -->
+    <rect x="40" y="160" width="160" height="10" rx="3" fill="#cbd5e1"/> <!-- Base -->
+    <rect x="75" y="118" width="90" height="40" fill="#38bdf8" fill-opacity="0.3"/> <!-- Screen glow -->
+  </g>
+</svg>

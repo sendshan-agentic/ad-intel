@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgStore" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc"/>
+      <stop offset="100%" stop-color="#e2e8f0"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="600" fill="url(#bgStore)"/>
+
+  <!-- PW Store Badge Top Left -->
+  <g transform="translate(40, 35)">
+    <circle cx="16" cy="16" r="16" fill="#18181b"/>
+    <text x="16" y="21" fill="#ffffff" font-family="-apple-system, sans-serif" font-size="10" font-weight="900" text-anchor="middle">PW</text>
+    <text x="42" y="22" fill="#0f172a" font-family="-apple-system, sans-serif" font-size="14" font-weight="800">PW Store Official</text>
+  </g>
+
+  <!-- Book 1: ZOOLOGY MED EASY 3.0 (Yellow Cover) -->
+  <g transform="translate(100, 110)">
+    <!-- Book Shadow -->
+    <rect x="15" y="15" width="170" height="340" rx="8" fill="#000000" fill-opacity="0.15"/>
+    <!-- Book Body -->
+    <rect x="0" y="0" width="170" height="340" rx="8" fill="#facc15" stroke="#eab308" stroke-width="2"/>
+    <rect x="0" y="0" width="20" height="340" rx="4" fill="#eab308"/> <!-- Spine -->
+
+    <text x="95" y="60" fill="#713f12" font-family="-apple-system, sans-serif" font-size="16" font-weight="900" text-anchor="middle">ZOOLOGY</text>
+    <rect x="40" y="75" width="110" height="26" rx="4" fill="#18181b"/>
+    <text x="95" y="93" fill="#ffffff" font-family="-apple-system, sans-serif" font-size="11" font-weight="800" text-anchor="middle">MED EASY 3.0</text>
+
+    <!-- Faculty portrait circle -->
+    <circle cx="95" cy="190" r="50" fill="#ffffff" stroke="#ca8a04" stroke-width="3"/>
+    <circle cx="95" cy="180" r="28" fill="#fed7aa"/>
+    <path d="M70 170 Q95 135 120 170 Z" fill="#713f12"/>
+    <text x="95" y="270" fill="#854d0e" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" text-anchor="middle">Dr. Akanksha</text>
+  </g>
+
+  <!-- Book 2: BOTANY MED EASY (Dark Navy Cover) -->
+  <g transform="translate(320, 110)">
+    <!-- Book Shadow -->
+    <rect x="15" y="15" width="170" height="340" rx="8" fill="#000000" fill-opacity="0.15"/>
+    <!-- Book Body -->
+    <rect x="0" y="0" width="170" height="340" rx="8" fill="#0f172a" stroke="#1e293b" stroke-width="2"/>
+    <rect x="0" y="0" width="20" height="340" rx="4" fill="#0284c7"/> <!-- Spine -->
+
+    <text x="95" y="60" fill="#38bdf8" font-family="-apple-system, sans-serif" font-size="16" font-weight="900" text-anchor="middle">BOTANY</text>
+    <rect x="40" y="75" width="110" height="26" rx="4" fill="#38bdf8"/>
+    <text x="95" y="93" fill="#0f172a" font-family="-apple-system, sans-serif" font-size="11" font-weight="800" text-anchor="middle">MED EASY</text>
+
+    <!-- Faculty portrait circle -->
+    <circle cx="95" cy="190" r="50" fill="#ffffff" stroke="#0284c7" stroke-width="3"/>
+    <circle cx="95" cy="180" r="28" fill="#fed7aa"/>
+    <path d="M70 170 Q95 135 120 170 Z" fill="#0f172a"/>
+    <text x="95" y="270" fill="#cbd5e1" font-family="-apple-system, sans-serif" font-size="11" font-weight="700" text-anchor="middle">NEET Faculty Set</text>
+  </g>
+
+  <!-- Bottom Promotional Banner -->
+  <rect x="60" y="490" width="480" height="70" rx="10" fill="#18181b"/>
+  <text x="85" y="525" fill="#ffffff" font-family="-apple-system, sans-serif" font-size="16" font-weight="800">Study Smart &amp; Save Bigg</text>
+  <text x="85" y="546" fill="#94a3b8" font-family="-apple-system, sans-serif" font-size="12">Buy the best competitive NEET exam books on PW Store</text>
+  <rect x="420" y="506" width="100" height="38" rx="6" fill="#3b82f6"/>
+  <text x="470" y="530" fill="#ffffff" font-family="-apple-system, sans-serif" font-size="12" font-weight="800" text-anchor="middle">Shop Now</text>
+</svg>

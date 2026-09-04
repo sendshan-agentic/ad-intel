@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="50" fill="#C8102E" />
+  <text x="50" y="58" fill="#FFFFFF" font-family="system-ui, sans-serif" font-weight="900" font-size="22" letter-spacing="1" text-anchor="middle">FIIT</text>
+  <text x="50" y="74" fill="#FFD100" font-family="system-ui, sans-serif" font-weight="800" font-size="16" letter-spacing="1" text-anchor="middle">JEE</text>
+</svg>
