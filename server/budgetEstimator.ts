@@ -112,7 +112,7 @@ export function estimateMonthlySpendRange(
     return `₹${val.toLocaleString('en-IN')}`;
   };
 
-  const formattedRange = `${formatInr(minMonthlyInr)} – ${formatInr(maxMonthlyInr)} / month (approx. $${minMonthlyUsd.toLocaleString()} – $${maxMonthlyUsd.toLocaleString()})`;
+  const formattedRange = `${formatInr(minMonthlyInr)} – ${formatInr(maxMonthlyInr)} / month`;
 
   return {
     minMonthlyInr,
