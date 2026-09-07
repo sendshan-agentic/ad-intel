@@ -24,8 +24,18 @@ export async function fetchRealAdsFromApify(
 
   const input = {
     maxItems: maxResults,
-    searchQuery: brandName,
-    country: countryCode
+    query: brandName,
+    country: countryCode,
+    category: 'all',
+    mediaType: 'all',
+    sortBy: 'mostRecent',
+    activeStatus: 'active',
+    advertisers: [],
+    fetchDetails: false,
+    proxyConfiguration: {
+      useApifyProxy: true,
+      apifyProxyGroups: ['RESIDENTIAL']
+    }
   };
 
   try {
@@ -46,8 +56,9 @@ export async function fetchRealAdsFromApify(
     }
 
     const items: any[] = await response.json();
+    console.log(`[Apify] Raw response for "${brandName}": ${Array.isArray(items) ? items.length : 'not-an-array'} items.`);
     if (!Array.isArray(items) || items.length === 0) {
-      console.warn(`[Apify] No ads returned for "${brandName}".`);
+      console.warn(`[Apify] No ads returned for "${brandName}". Raw sample: ${JSON.stringify(items).slice(0, 500)}`);
       return [];
     }
 
@@ -57,44 +68,44 @@ export async function fetchRealAdsFromApify(
     const ads: ScrapedAd[] = items.slice(0, maxResults).map((item: any, idx: number) => {
       // Field names below are best-effort based on the actor's documented output schema.
       // Adjust these keys if the actor's actual field names differ.
-      const startDateRaw = item.startDate || item.start_date || item.ad_delivery_start_time || item.createdTime || item.created_time;
+      const startDateRaw = item.start_date;
       const startedRunningOn = startDateRaw
-        ? new Date(startDateRaw).toISOString().split('T')[0]
+        ? new Date(startDateRaw * 1000).toISOString().split('T')[0]
         : new Date(now - 7 * dayMs).toISOString().split('T')[0];
       const daysActive = startDateRaw
-        ? Math.max(1, Math.round((now - new Date(startDateRaw).getTime()) / dayMs))
+        ? Math.max(1, Math.round((now - startDateRaw * 1000) / dayMs))
         : 7;
 
+      const snapshot = item.snapshot || {};
+      const images = snapshot.images || [];
+      const videos = snapshot.videos || [];
+
       let formatType: ScrapedAd['formatType'] = 'image';
-      if (item.creativeType === 'video' || item.videos?.length > 0 || item.video_url || item.videoUrl) formatType = 'video';
-      else if (item.creativeType === 'carousel' || (item.images && item.images.length > 1)) formatType = 'carousel';
+      if (videos.length > 0) formatType = 'video';
+      else if (images.length > 1) formatType = 'carousel';
 
       const creativeUrl =
-        item.images?.[0]?.originalUrl ||
-        item.images?.[0]?.resizedUrl ||
-        item.images?.[0] ||
-        item.imageUrl ||
-        item.image_url ||
-        item.videos?.[0]?.thumbnailUrl ||
-        item.thumbnailUrl ||
-        item.snapshot_url ||
+        images?.[0]?.original_image_url ||
+        images?.[0]?.resized_image_url ||
+        videos?.[0]?.video_preview_image_url ||
+        snapshot.page_profile_picture_url ||
         '';
 
       return {
-        id: item.id || item.ad_id || item.adId || `apify_${brandName}_${idx}`,
-        pageName: item.pageName || item.page_name || item.advertiser || brandName,
-        adArchiveId: item.id || item.ad_id || item.adId,
+        id: item.ad_archive_id || `apify_${brandName}_${idx}`,
+        pageName: snapshot.page_name || brandName,
+        adArchiveId: item.ad_archive_id,
         creativeUrl,
         formatType,
-        adCopy: (item.body || item.ad_body_text || item.text || item.adText || item.title || '').replace(/<[^>]*>?/gm, ''),
-        headline: item.title || item.ad_headline || item.headline,
-        displayUrl: item.linkDomain || item.linkUrlClean || item.link,
+        adCopy: (snapshot.body?.text || snapshot.caption || snapshot.title || '').replace(/<[^>]*>?/gm, ''),
+        headline: snapshot.title,
+        displayUrl: snapshot.link_description,
         startedRunningOn,
         daysActive,
-        ctaText: item.ctaText || item.cta_text || 'Learn More',
-        linkUrl: item.linkUrlClean || item.landing_page_url || item.link,
-        platforms: item.platforms || ['facebook', 'instagram'],
-        libraryUrl: item.adLibraryUrl || item.ad_snapshot_url || item.snapshotUrl || `https://www.facebook.com/ads/library/?id=${item.id || item.ad_id || ''}`
+        ctaText: snapshot.cta_text || 'Learn More',
+        linkUrl: snapshot.link_url,
+        platforms: ['facebook', 'instagram'],
+        libraryUrl: `https://www.facebook.com/ads/library/?id=${item.ad_archive_id || ''}`
       };
     });
 
@@ -105,4 +116,3 @@ export async function fetchRealAdsFromApify(
     return [];
   }
 }
-
