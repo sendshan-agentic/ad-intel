@@ -36,7 +36,7 @@ async function callModelWithTimeout(
   ai: any,
   model: string,
   prompt: string,
-  timeoutMs: number = 8000
+  timeoutMs: number = 25000
 ): Promise<string | null> {
   let timer: NodeJS.Timeout | null = null;
   const timeoutPromise = new Promise<null>((_, reject) => {
@@ -69,14 +69,15 @@ async function generateContentWithFallback(prompt: string): Promise<string | nul
   for (const model of FALLBACK_MODELS) {
     try {
       console.log(`[Gemini] Requesting strategic analysis via ${model}...`);
-      const text = await callModelWithTimeout(ai, model, prompt, 8000);
+      const text = await callModelWithTimeout(ai, model, prompt, 25000);
       if (text && text.trim().length > 0) {
         console.log(`[Gemini] Successfully received strategic synthesis from ${model}.`);
         return text;
       }
     } catch (err: any) {
       const message = err?.message || String(err);
-      console.warn(`[Gemini] Notice on ${model}: ${message}. Cascading to next fallback...`);
+      const status = err?.status || err?.code || 'unknown';
+      console.error(`[Gemini] FAILED on ${model} — status: ${status}, message: ${message}. Cascading to next fallback...`);
     }
   }
 
@@ -140,7 +141,7 @@ Keep the tone direct and actionable — this is for an internal strategy call, n
 
     if (rawMarkdown && rawMarkdown.trim().length > 0) {
       console.log('[Gemini] Analysis generated successfully. Length:', rawMarkdown.length);
-      const structured = parseMarkdownAnalysis(rawMarkdown, competitors);
+      const structured = parseMarkdownAnalysis(rawMarkdown, competitors, payload);
       return {
         rawMarkdown,
         competitors: structured.competitors,
@@ -163,7 +164,8 @@ Keep the tone direct and actionable — this is for an internal strategy call, n
  */
 function parseMarkdownAnalysis(
   markdown: string,
-  competitors: CompetitorScrapeRecord[]
+  competitors: CompetitorScrapeRecord[],
+  payload: AdIntelPayload
 ): { competitors: AnalysisCompetitorSection[]; overall: AnalysisOverallSection } {
   const competitorSections: AnalysisCompetitorSection[] = [];
 
@@ -180,22 +182,22 @@ function parseMarkdownAnalysis(
 
     const leadingAngle = extractSection(
       /(?:1\.?\s*(?:Angle|Hook|What angle)[\s\S]*?:\s*|\*\*1\.\s*Angle\/Hook:\*\*\s*)([^\n]+(?:\n[^\n1-4#]+)*)/i,
-      comp.formatBreakdown.videoCount > comp.formatBreakdown.imageCount ? 'High-urgency social proof & video testimonial hooks' : 'Offer-led price anchoring & direct enrollment'
+      comp.formatBreakdown.videoCount > comp.formatBreakdown.imageCount ? 'High-urgency social proof & video testimonial hooks' : 'Offer-led urgency framing & direct CTA'
     );
 
     const messagingPatterns = extractSection(
       /(?:2\.?\s*(?:Messaging pattern|Repeating messaging)[\s\S]*?:\s*|\*\*2\.\s*Messaging Pattern:\*\*\s*)([^\n]+(?:\n[^\n1-4#]+)*)/i,
-      'Heavy reliance on discount codes, trial demo bookings, and faculty prestige claims'
+      'Heavy reliance on urgency framing, limited-time offers, and credibility claims'
     );
 
     const formatStrategy = extractSection(
       /(?:3\.?\s*(?:Format strategy)[\s\S]*?:\s*|\*\*3\.\s*Format Strategy:\*\*\s*)([^\n]+(?:\n[^\n1-4#]+)*)/i,
-      `${comp.formatBreakdown.videoPercentage}% video, ${comp.formatBreakdown.imagePercentage}% static images — testing aggressive mid-funnel reels`
+      `${comp.formatBreakdown.videoPercentage}% video, ${comp.formatBreakdown.imagePercentage}% static images — testing across formats`
     );
 
     const gapOrWeakness = extractSection(
       /(?:4\.?\s*(?:Gap|Weakness|Clear gap)[\s\S]*?:\s*|\*\*4\.\s*Gap\/Weakness:\*\*\s*)([^\n]+(?:\n[^\n1-4#]+)*)/i,
-      'Lacks localized emotional relatability for Tier 2/3 regional student concerns'
+      'Lacks specificity to the stated target audience\'s actual concerns'
     );
 
     competitorSections.push({
@@ -218,12 +220,12 @@ function parseMarkdownAnalysis(
 
   const whitespace = extractOverall(
     /(?:1\.?\s*(?:Competitive angle|Whitespace opportunity)[\s\S]*?:\s*|\*\*1\.\s*Whitespace Opportunity:\*\*\s*)([^\n]+(?:\n[^\n1-4#]+)*)/i,
-    'Parent-centric reassurance focusing on personalized mentorship rather than mass rank flex'
+    'A specificity-led angle addressing the stated target audience\'s exact concern, rather than broad category messaging'
   );
 
   const hooksRaw = extractOverall(
     /(?:2\.?\s*(?:Specific ad hooks|Ad hooks)[\s\S]*?:\s*|\*\*2\.\s*Ad Hooks:\*\*\s*)([^\n]+(?:\n[^\n3-4#]+)*)/i,
-    '1. "Is your child studying 6 hours a day but still anxious about Class 12 boards?"\n2. "Why Kota methods fail students in Tier 2 cities — and what actually works."\n3. "The 15-minute diagnostic test that reveals where your child is losing marks."'
+    `1. "Most in this space overlook one thing about ${payload.adTopics.toLowerCase()} — here's what changes when you don't."\n2. "A direct answer for ${payload.targetAudience.toLowerCase()}: what's working right now and what's just noise."\n3. "Here's the one question worth asking before choosing between competitors on ${payload.adTopics.toLowerCase()}."`
   );
 
   const differentiatedHooks = hooksRaw
@@ -246,9 +248,9 @@ function parseMarkdownAnalysis(
     overall: {
       whitespaceOpportunity: whitespace,
       differentiatedHooks: differentiatedHooks.length > 0 ? differentiatedHooks : [
-        '"Is your child studying 6 hours a day but still anxious about board exams?"',
-        '"Why Kota methods fail students in Tier 2 cities — and what actually works."',
-        '"The 15-minute diagnostic test that reveals where your child is losing marks."'
+        `"Most in this space overlook one thing about ${payload.adTopics.toLowerCase()} — here's what changes when you don't."`,
+        `"A direct answer for ${payload.targetAudience.toLowerCase()}: what's working right now and what's just noise."`,
+        `"Here's the one question worth asking before choosing between competitors on ${payload.adTopics.toLowerCase()}."`
       ],
       recommendedFormatMix: formatMix,
       avoidAngle
@@ -269,23 +271,23 @@ function createHeuristicAnalysisFallback(
     return {
       competitorName: c.brand,
       leadingAngle: isVideoHeavy
-        ? 'Social proof & educator authority via video reels and student transformation stories.'
-        : 'Offer-led discount urgency & batch enrollment deadlines.',
-      messagingPatterns: `Repeated emphasis on "Limited Seats", "Free Demo / Trial", and "Top 1% Educators". Dominant CTA: ${c.ads[0]?.ctaText || 'Learn More'}.`,
-      formatStrategy: `${c.formatBreakdown.videoPercentage}% video, ${c.formatBreakdown.imagePercentage}% image, ${c.formatBreakdown.carouselPercentage}% carousel. Signals an ${isVideoHeavy ? 'advanced performance setup with active UGC creative testing' : 'early-stage static ad testing phase'}.`,
-      gapOrWeakness: `Focuses heavily on general features rather than addressing specific emotional friction points of ${payload.targetAudience} in ${payload.targetLocation}.`
+        ? 'Social proof & authority-led messaging via video testimonials and case studies.'
+        : 'Offer-led urgency framing with limited-time deadlines.',
+      messagingPatterns: `Repeated emphasis on urgency phrases and credibility claims. Dominant CTA: ${c.ads[0]?.ctaText || 'Learn More'}.`,
+      formatStrategy: `${c.formatBreakdown.videoPercentage}% video, ${c.formatBreakdown.imagePercentage}% image, ${c.formatBreakdown.carouselPercentage}% carousel. Signals an ${isVideoHeavy ? 'advanced performance setup with active creative testing' : 'early-stage static ad testing phase'}.`,
+      gapOrWeakness: `Focuses on general features rather than addressing specific concerns of "${payload.targetAudience}" in ${payload.targetLocation}.`
     };
   });
 
   const overall: AnalysisOverallSection = {
-    whitespaceOpportunity: `Zero competitors are addressing parent anxiety around individualized pacing for ${payload.targetAudience}. Position ${payload.brandName} as the empathetic, high-accountability mentor rather than another factory course.`,
+    whitespaceOpportunity: `None of the scraped competitors are directly addressing the specific concern of "${payload.targetAudience}" around "${payload.adTopics}". Position ${payload.brandName} as the clear, trustworthy specialist on this exact problem rather than a generic alternative.`,
     differentiatedHooks: [
-      `"If your child in Class 10/12 is studying hard but scores aren't improving, the problem isn't hard work — it's the revision method."`,
-      `"What every Tier 2 parent needs to know before enrolling in high-fee coaching institutes."`,
-      `"3 questions to ask your child's teachers this week to see if they're actually understanding physics concepts."`
+      `"Most ${payload.targetAudience.toLowerCase()} overlook this one thing about ${payload.adTopics.toLowerCase()} — here's what changes when you don't."`,
+      `"If ${payload.adTopics.toLowerCase()} hasn't moved the numbers yet, the issue usually isn't effort — it's the approach."`,
+      `"A straight answer for ${payload.targetAudience.toLowerCase()} in ${payload.targetLocation}: what actually works for ${payload.adTopics.toLowerCase()}, and what's just noise."`
     ],
-    recommendedFormatMix: `55% 9:16 Video Reels (talking-head empathetic hook) + 30% Multi-card Problem vs. Solution Carousels + 15% High-Contrast Social Proof Statics.`,
-    avoidAngle: `Avoid raw rank/AIR score boasting. Competitors have completely saturated the "AIR 1/AIR 4" flex, causing ad fatigue among parents.`
+    recommendedFormatMix: `Based on the format mix seen across scraped competitors, lead with short-form video testimonials/case studies, support with carousel breakdowns of your process, and use static social-proof ads for retargeting.`,
+    avoidAngle: `Avoid repeating the same generic claims already saturating this space among the scraped competitors — differentiate on specificity to ${payload.targetAudience}, not broader positioning.`
   };
 
   const rawMarkdown = `### Competitor Ad Intelligence Strategy
