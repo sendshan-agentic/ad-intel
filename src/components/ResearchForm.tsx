@@ -51,11 +51,11 @@ export const PRESETS: Array<{
 ];
 
 export const ResearchForm: React.FC<ResearchFormProps> = ({ onSubmit, isLoading }) => {
-  const [brandName, setBrandName] = useState('NextGen Academy');
-  const [targetAudience, setTargetAudience] = useState('parents of students aged 15-18, tier 2/3 cities India');
-  const [targetLocation, setTargetLocation] = useState('India (Tier 2/3 Cities)');
-  const [adTopics, setAdTopics] = useState('Class 10 & 12 Board Exam Prep, NEET/JEE Foundation batches, 1-on-1 doubt solving & personalized study pacing');
-  const [competitors, setCompetitors] = useState<string[]>(['PhysicsWallah', 'Vedantu', 'Allen Career Institute']);
+  const [brandName, setBrandName] = useState('');
+  const [targetAudience, setTargetAudience] = useState('');
+  const [targetLocation, setTargetLocation] = useState('');
+  const [adTopics, setAdTopics] = useState('');
+  const [competitors, setCompetitors] = useState<string[]>(['']);
   const [selectedIndustry, setSelectedIndustry] = useState('EdTech / K-12 / Test Prep');
 
   const addCompetitorField = () => {
