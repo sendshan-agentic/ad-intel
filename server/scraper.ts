@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { ScrapedAd, CompetitorScrapeRecord, FormatBreakdown, AdIntelPayload, ScrapeJobStatus } from './types.js';
 import { estimateMonthlySpendRange } from './budgetEstimator.js';
 import { db } from './db.js';
+import { fetchRealAdsFromApify } from './apifyScraper.js';
 
 export interface ScraperProgressCallback {
   (update: {
@@ -59,10 +60,33 @@ export class MetaAdLibraryScraper {
     let ads: ScrapedAd[] = [];
     let methodUsed = 'graphql';
 
+    // 0. Attempt real live scraping via Apify's Facebook Ad Library Scraper (if configured)
+    try {
+      ads = await fetchRealAdsFromApify(brandName, countryCode, 6);
+      if (ads.length > 0) {
+        methodUsed = 'apify-live';
+        onProgress?.({
+          status: 'scraping',
+          message: `Retrieved ${ads.length} real, live ads for "${brandName}" via Apify Meta Ad Library scraper.`,
+          currentCompetitor: brandName,
+          level: 'success'
+        });
+      }
+    } catch (err: any) {
+      onProgress?.({
+        status: 'scraping',
+        message: `Apify real-scrape attempt failed (${err?.message || 'unknown error'}). Trying direct methods...`,
+        currentCompetitor: brandName,
+        level: 'warn'
+      });
+    }
+
     try {
       // 1. Attempt GraphQL / Async Search request directly to Meta Ad Library
-      ads = await this.tryMetaAdLibraryGraphQL(brandName, countryCode, onProgress);
-      if (ads.length > 0) {
+      if (ads.length === 0) {
+        ads = await this.tryMetaAdLibraryGraphQL(brandName, countryCode, onProgress);
+      }
+      if (ads.length > 0 && methodUsed !== 'apify-live') {
         onProgress?.({
           status: 'scraping',
           message: `Successfully retrieved ${ads.length} active ads via reverse-engineered Meta GraphQL stream.`,
